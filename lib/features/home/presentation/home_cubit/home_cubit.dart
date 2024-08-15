@@ -10,54 +10,59 @@ class HomeCubit extends Cubit<HomeState> {
   HomeCubit(this.homeRepo) : super(HomeInitialState());
 
   static HomeCubit get(context) => BlocProvider.of(context);
-
   List<GradesModel> allGrades = [];
   List<GradesModel> filteredGrades = [];
-
-  /// Fetches all grades
+// get grades
   Future<void> getAllGrades() async {
     emit(GetGradesLoadingState());
     var result = await homeRepo.getGrades();
     result.fold(
-          (failure) {
+      (failure) {
         emit(GetGradesFailureState(failure.errorMessages));
       },
-          (grades) {
-        allGrades = grades;
+      (grades) {
+        allGrades=grades;
         emit(GetGradesSuccessState(grades));
       },
     );
   }
 
-  /// Updates a grade
-  Future<void> updateGrades(String id, GradesModel gradesModel) async {
+// update grades
+  Future<void> updateGrades(String id,GradesModel gradesModel) async {
     emit(GetGradesLoadingState());
+
     var result = await homeRepo.updateGrades(id, gradesModel);
     result.fold(
-          (failure) {
+      (failure) {
         emit(GetGradesFailureState(failure.errorMessages));
-      },
-          (success) {
         getAllGrades();
+
+      },
+      (grades) {
+
+        getAllGrades();
+
       },
     );
   }
 
-  /// Deletes a grade
+  // delete grades
   Future<void> deleteGrades(String id) async {
     emit(GetGradesLoadingState());
     var result = await homeRepo.deleteGrade(id);
     result.fold(
           (failure) {
         emit(GetGradesFailureState(failure.errorMessages));
-      },
-          (message) {
-        emit(DeleteGradesSuccessState(message));
         getAllGrades();
-      },
+
+          },
+          (message) {
+            DeleteGradesSuccessState(message);
+            getAllGrades();
+
+          },
     );
   }
-
   /// Searches grades based on a query
   void searchGrades(String searchQuery) {
     searchQuery = searchQuery.toLowerCase();
@@ -69,28 +74,27 @@ class HomeCubit extends Cubit<HomeState> {
       filteredGrades.clear();
     }
   }
-
-  /// Adds a new grade
-  Future<void> addGrades(String nameAr, String nameEn) async {
+  // add grades
+  Future<void> addGrades( String nameAr,String nameEn) async {
     emit(AddGradesLoadingState());
-    var result = await homeRepo.addGrade(nameAr, nameEn);
+    var result = await homeRepo.addGrade(nameAr,nameEn);
     result.fold(
           (failure) {
         emit(AddGradesFailureState(failure.errorMessages));
-      },
+        getAllGrades();
+
+          },
           (grades) {
         emit(AddGradesSuccessState(grades));
         getAllGrades();
-      },
+
+          },
     );
   }
-
-  ///////////////////////// Classes //////////////////////////////
-
+/////////////////////////classes/////////////////////////////
   List<ClassesModel> allClasses = [];
   List<ClassesModel> filteredClasses = [];
-
-  /// Fetches all classes
+  // get grades
   Future<void> getAllClasses() async {
     emit(GetClassesLoadingState());
     var result = await homeRepo.getClasses();
@@ -99,41 +103,25 @@ class HomeCubit extends Cubit<HomeState> {
         emit(GetClassesFailureState(failure.errorMessages));
       },
           (classes) {
-        allClasses = classes;
+            allClasses=classes;
         emit(GetClassesSuccessState(classes));
       },
     );
   }
 
-  /// Updates a class
-  Future<void> updateClasses(String id, ClassesModel classesModel) async {
-    emit(GetClassesLoadingState());
+// update grades
+  Future<void> updateClasses(String id,ClassesModel classesModel) async {
     var result = await homeRepo.updateClasses(id, classesModel);
     result.fold(
           (failure) {
-        emit(GetClassesFailureState(failure.errorMessages));
-      },
-          (success) {
-        getAllClasses();
-      },
-    );
-  }
-
-  /// Deletes a class
-  Future<void> deleteClasses(String id) async {
-    emit(GetClassesLoadingState());
-    var result = await homeRepo.deleteClasses(id);
-    result.fold(
-          (failure) {
-        emit(GetClassesFailureState(failure.errorMessages));
-      },
-          (message) {
-        emit(DeleteClassesSuccessState(message));
-        getAllClasses();
+            emit(GetClassesFailureState(failure.errorMessages));
+            getAllClasses();
+          },
+          (classes) {
+            getAllClasses();
       },
     );
   }
-
   /// Searches classes based on a query
   void searchClasses(String searchQuery) {
     searchQuery = searchQuery.toLowerCase();
@@ -145,19 +133,38 @@ class HomeCubit extends Cubit<HomeState> {
       filteredClasses.clear();
     }
   }
-
-  /// Adds a new class
-  Future<void> addClasses(String nameAr, String nameEn, String gradeId) async {
-    emit(AddClassesLoadingState());
-    var result = await homeRepo.addClasses(nameAr, nameEn, gradeId);
+  // delete grades
+  Future<void> deleteClasses(String id) async {
+    var result = await homeRepo.deleteClasses(id);
     result.fold(
           (failure) {
-        emit(AddClassesFailureState(failure.errorMessages));
-      },
-          (classes) {
-        emit(AddClassesSuccessState(classes));
-        getAllClasses();
-      },
+            getAllClasses();
+          },
+          (message) {
+            getAllClasses();
+          },
     );
   }
+  // add grades
+  Future<void> addClasses(
+
+      String nameAr,String nameEn,String gradeId) async {
+    emit(AddClassesLoadingState());
+    var result = await homeRepo.addClasses(nameAr,nameEn,gradeId);
+    result.fold(
+          (failure) {
+
+            emit(AddClassesFailureState(failure.errorMessages));
+            getAllClasses();
+
+          },
+          (classes) {
+
+            emit(AddClassesSuccessState(classes));
+            getAllClasses();
+
+          },
+    );
+  }
+
 }
